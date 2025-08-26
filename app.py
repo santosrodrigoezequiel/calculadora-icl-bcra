@@ -2,7 +2,52 @@ import streamlit as st
 import pandas as pd
 from datetime import date
 from dateutil.relativedelta import relativedelta
+import streamlit.components.v1 as components
 
+# Metadatos SEO (título, descripción, og: y twitter:)
+components.html("""
+    <meta name="title" content="Calculadora ICL | Actualización de alquiler BCRA">
+    <meta name="description" content="Calculá cuánto debería ser tu nuevo alquiler según el Índice para Contratos de Locación (ICL) del BCRA.">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Calculadora ICL | BCRA">
+    <meta property="og:description" content="Herramienta para calcular actualizaciones de alquiler según el ICL del BCRA.">
+    <meta property="og:url" content="https://tu-app.streamlit.app">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Calculadora ICL | Actualización de alquiler">
+    <meta name="twitter:description" content="Calculá tu alquiler actualizado con el ICL oficial del BCRA.">
+    <link rel="canonical" href="https://calculadora-icl-bcra.streamlit.app/">
+""", height=0)
+
+# Datos estructurados tipo FAQ (rich snippet para Google)
+components.html("""
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Qué es el ICL del BCRA?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Es el Índice para Contratos de Locación publicado diariamente por el Banco Central de la República Argentina para ajustar alquileres en contratos regulados por la Ley 27.551."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo se calcula el nuevo alquiler con ICL?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Se compara el ICL actual con el de la última actualización y se aplica el porcentaje de aumento al alquiler base."
+      }
+    }
+  ]
+}
+</script>
+""", height=0)
+
+# Configuración y título
 st.set_page_config(page_title="Calculadora ICL (BCRA)", page_icon="📈", layout="centered")
 st.title("📈 Calculadora ICL (BCRA)")
 st.caption("Calcula la actualización de alquiler según el Índice para Contratos de Locación (ICL) publicado por el Banco Central de la República Argentina.")
@@ -63,4 +108,3 @@ if st.button("Calcular actualización"):
         st.success(f"Nuevo alquiler estimado: ${nuevo_alquiler:,.2f} (aumento {aumento_pct:.2f}%)")
     except Exception as e:
         st.error(f"Ocurrió un error en el cálculo: {e}")
-
