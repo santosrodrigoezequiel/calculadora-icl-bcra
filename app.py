@@ -4,23 +4,29 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 import streamlit.components.v1 as components
 
-# Metadatos SEO (título, descripción, og: y twitter:)
-components.html("""
-    <meta name="title" content="Calculadora ICL | Actualización de alquiler BCRA">
-    <meta name="description" content="Calculá cuánto debería ser tu nuevo alquiler según el Índice para Contratos de Locación (ICL) del BCRA.">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="Calculadora ICL | BCRA">
-    <meta property="og:description" content="Herramienta para calcular actualizaciones de alquiler según el ICL del BCRA.">
-    <meta property="og:url" content="https://tu-app.streamlit.app">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Calculadora ICL | Actualización de alquiler">
-    <meta name="twitter:description" content="Calculá tu alquiler actualizado con el ICL oficial del BCRA.">
-    <link rel="canonical" href="https://calculadora-icl-bcra.streamlit.app/">
-""", height=0)
+# CONFIGURACIÓN DE LA PÁGINA
+st.set_page_config(
+    page_title="Calculadora ICL (BCRA)",
+    page_icon="📈",
+    layout="centered"
+)
 
-# Datos estructurados tipo FAQ (rich snippet para Google)
+# SEO + Rich Snippets
 components.html("""
+<!-- Metadatos SEO -->
+<meta name="title" content="Calculadora ICL | Actualización de alquiler BCRA">
+<meta name="description" content="Calculá cuánto debería ser tu nuevo alquiler según el Índice para Contratos de Locación (ICL) del Banco Central de la República Argentina.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Calculadora ICL | BCRA">
+<meta property="og:description" content="Herramienta para calcular actualizaciones de alquiler según el ICL del BCRA.">
+<meta property="og:url" content="https://calculadora-icl-bcra.streamlit.app">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Calculadora ICL | Actualización de alquiler">
+<meta name="twitter:description" content="Calculá tu alquiler actualizado con el ICL oficial del BCRA.">
+<link rel="canonical" href="https://calculadora-icl-bcra.streamlit.app">
+
+<!-- Rich Snippet FAQ (JSON-LD) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -47,8 +53,7 @@ components.html("""
 </script>
 """, height=0)
 
-# Configuración y título
-st.set_page_config(page_title="Calculadora ICL (BCRA)", page_icon="📈", layout="centered")
+# TÍTULO Y DESCRIPCIÓN
 st.title("📈 Calculadora ICL (BCRA)")
 st.caption("Calcula la actualización de alquiler según el Índice para Contratos de Locación (ICL) publicado por el Banco Central de la República Argentina.")
 
@@ -73,15 +78,15 @@ st.subheader("✍️ Ingresar datos")
 
 col1, col2 = st.columns(2)
 with col1:
-    alquiler_base = st.number_input("Alquiler anterior ($)", min_value=0.0, value=429500.0, step=100.0, format="%.2f")
+    alquiler_base = st.number_input("Alquiler anterior ($)", min_value=0.0, value=123456.0, step=100.0, format="%.2f")
 with col2:
-    icl_anterior = st.number_input("ICL anterior", min_value=0.0, value=24.19, step=0.01, format="%.2f")
+    icl_anterior = st.number_input("ICL anterior", min_value=0.0, value=12.34, step=0.01, format="%.2f")
 
 col3, col4 = st.columns(2)
 with col3:
     meses = st.number_input("Período (meses entre ajustes)", min_value=1, max_value=24, value=4, step=1)
 with col4:
-    icl_nuevo = st.number_input("ICL nuevo", min_value=0.0, value=27.00, step=0.01, format="%.2f")
+    icl_nuevo = st.number_input("ICL nuevo", min_value=0.0, value=12.34, step=0.01, format="%.2f")
 
 # ----------------------------
 # Cálculo
