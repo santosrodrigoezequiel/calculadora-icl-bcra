@@ -38,8 +38,8 @@ with col1:
     meses_transcurridos = st.number_input("Período (meses entre ajustes)", min_value=0, step=1)
 
 with col2:
-    icl_anterior = st.number_input("ICL anterior", min_value=0.0000, format="%.4f")
-    icl_actual = st.number_input("ICL nuevo", min_value=0.0000, format="%.4f")
+    icl_anterior = st.number_input("ICL anterior", min_value=0.00, format="%.2f")
+    icl_actual = st.number_input("ICL nuevo", min_value=0.00, format="%.2f")
 
 # Cálculo
 if icl_anterior > 0 and icl_actual > 0 and alquiler_anterior > 0:
