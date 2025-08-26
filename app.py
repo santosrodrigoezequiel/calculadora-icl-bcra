@@ -9,11 +9,11 @@ st.set_page_config(page_title="Calculadora ICL (BCRA)", page_icon="📈", layout
 
 # Imagen de portada
 image = Image.open("app-image.png")
-st.image(image, use_column_width=True)
+st.image(image, use_container_width=True)  # ← actualizado
 
 # Título
-st.title("📈 Calculadora ICL del Banco Central de la República Argentina")
-st.caption("Calcula la actualización de alquiler según el Índice para Contratos de Locación (ICL) publicado por el BCRA.")
+st.title("📈 Calculadora ICL (BCRA)")
+st.caption("Calcula la actualización de alquiler según el Índice para Contratos de Locación (ICL) publicado por el Banco Central de la República Argentina.")
 
 # ----------------------------
 # Instrucciones manuales
@@ -34,15 +34,15 @@ st.subheader("📝 Ingresar datos")
 
 col1, col2 = st.columns(2)
 with col1:
-    alquiler_base = st.number_input("Alquiler anterior ($)", min_value=0.0, value=0.0, step=100.0, format="%.2f")
+    alquiler_base = st.number_input("Alquiler anterior ($)", min_value=0.0, value=429500.0, step=100.0, format="%.2f")
 with col2:
-    icl_anterior = st.number_input("ICL anterior", min_value=0.0, value=0.0, step=0.01, format="%.2f")
+    icl_anterior = st.number_input("ICL anterior", min_value=0.0, value=24.19, step=0.01, format="%.2f")
 
 col3, col4 = st.columns(2)
 with col3:
     meses = st.number_input("Período (meses entre ajustes)", min_value=1, max_value=24, value=4, step=1)
 with col4:
-    icl_nuevo = st.number_input("ICL nuevo", min_value=0.0, value=0.0, step=0.01, format="%.2f")
+    icl_nuevo = st.number_input("ICL nuevo", min_value=0.0, value=27.00, step=0.01, format="%.2f")
 
 # ----------------------------
 # Cálculo
