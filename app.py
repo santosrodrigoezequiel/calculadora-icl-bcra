@@ -4,18 +4,14 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 from PIL import Image
 
-# Configuración SEO básica
 st.set_page_config(page_title="Calculadora ICL (BCRA)", page_icon="📈", layout="centered")
 
-# Imagen de portada
 image = Image.open("app-image.png")
 st.image(image, use_container_width=True)  # ← actualizado
 
-# Título
 st.title("📈 Calculadora ICL (BCRA)")
 st.caption("Calcula la actualización de alquiler según el Índice para Contratos de Locación (ICL) publicado por el Banco Central de la República Argentina.")
 
-# ----------------------------
 # Instrucciones manuales
 # ----------------------------
 st.subheader("📌 Instrucciones para obtener el ICL")
@@ -26,7 +22,6 @@ st.markdown("""
 4. Ingresalo manualmente en los campos de abajo.
 """)
 
-# ----------------------------
 # Ingreso manual de datos
 # ----------------------------
 st.divider()
@@ -44,7 +39,6 @@ with col3:
 with col4:
     icl_nuevo = st.number_input("ICL nuevo", min_value=0.0, value=0.0, step=0.01, format="%.2f")
 
-# ----------------------------
 # Cálculo
 # ----------------------------
 st.divider()
@@ -68,4 +62,5 @@ if st.button("Calcular actualización"):
         st.success(f"💰 Nuevo alquiler estimado: ${nuevo_alquiler:,.2f} (aumento {aumento_pct:.2f}%)")
     except Exception as e:
         st.error(f"Ocurrió un error en el cálculo: {e}")
+
 
