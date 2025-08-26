@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 st.set_page_config(page_title="Calculadora ICL (BCRA)", page_icon="📈", layout="centered")
 st.title("📈 Calculadora ICL (BCRA)")
-st.caption("Calcula la actualización de alquiler según el Índice para Contratos de Locación (ICL) publicado por el BCRA.")
+st.caption("Calcula la actualización de alquiler según el Índice para Contratos de Locación (ICL) publicado por el Banco Central de la República Argentina.")
 
 # ----------------------------
 # Instrucciones manuales
@@ -63,3 +63,4 @@ if st.button("Calcular actualización"):
         st.success(f"Nuevo alquiler estimado: ${nuevo_alquiler:,.2f} (aumento {aumento_pct:.2f}%)")
     except Exception as e:
         st.error(f"Ocurrió un error en el cálculo: {e}")
+
