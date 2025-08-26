@@ -1,7 +1,8 @@
+
 import streamlit as st
 import pandas as pd
 import requests
-from io import BytesIO
+from bs4 import BeautifulSoup
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
@@ -11,85 +12,44 @@ st.title("📈 Calculadora ICL (BCRA)")
 st.caption("Calcula la actualización de alquiler por ICL (serie diaria oficial del BCRA).")
 
 # ----------------------------
-# Utilidades de carga de datos
+# Utilidades de carga de datos desde HTML
 # ----------------------------
 
-@st.cache_data(ttl=6*60*60)  # cachea 6 horas
-def _leer_xls(url: str) -> pd.DataFrame:
+@st.cache_data(ttl=6*60*60)
+def cargar_icl_desde_html():
+    url = "https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp"
     resp = requests.get(url, timeout=30)
     resp.raise_for_status()
-    bio = BytesIO(resp.content)
-    # Intentamos leer todas las hojas y detectar columnas de fecha/valor de forma robusta
-    # porque el formato de los .xls del BCRA puede variar levemente.
-    xls = pd.ExcelFile(bio)
-    frames = []
-    for sheet in xls.sheet_names:
-        df = xls.parse(sheet)
-        # Limpieza básica
-        df = df.dropna(how="all")
-        # Heurística: columna fecha = aquella que al convertir tenga muchas fechas válidas
-        fecha_col, valor_col = None, None
-        for c in df.columns:
-            try:
-                conv = pd.to_datetime(df[c], errors="coerce")
-                if conv.notna().sum() > len(df) * 0.5:
-                    fecha_col = c
-                    break
-            except Exception:
-                pass
-        # Columna valor: numérica con muchos no-nulos
-        if fecha_col is not None:
-            candidates = []
-            for c in df.columns:
-                if c == fecha_col:
-                    continue
-                serie = pd.to_numeric(df[c], errors="coerce")
-                if serie.notna().sum() > len(df) * 0.5:
-                    candidates.append((c, serie))
-            if candidates:
-                # elegimos la columna con más datos válidos
-                valor_col = max(candidates, key=lambda t: t[1].notna().sum())[0]
-        if fecha_col and valor_col:
-            out = pd.DataFrame({
-                "fecha": pd.to_datetime(df[fecha_col], errors="coerce").dt.date,
-                "icl": pd.to_numeric(df[valor_col], errors="coerce")
-            }).dropna()
-            frames.append(out)
-    if not frames:
-        raise ValueError(f"No se pudieron identificar columnas fecha/valor en {url}")
-    df_all = pd.concat(frames, ignore_index=True)
-    # Quitamos duplicados y ordenamos
-    df_all = df_all.drop_duplicates(subset=["fecha"]).sort_values("fecha")
-    # Filtramos valores no positivos/raros
-    df_all = df_all[df_all["icl"] > 0]
-    return df_all
+    soup = BeautifulSoup(resp.content, "html.parser")
 
-@st.cache_data(ttl=6*60*60)
-def cargar_icl_para_anios(anios):
-    """Intenta primero XLS anual (iclAAAA.xls). Si no, usa diar_icl.xls."""
-    frames = []
-    for anio in sorted(set(anios)):
-        url_anual = f"https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/icl{anio}.xls"
-        try:
-            frames.append(_leer_xls(url_anual))
-            continue
-        except Exception:
-            pass
-    if not frames:
-        # Fallback a la serie histórica completa
-        url_hist = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/diar_icl.xls"
-        frames.append(_leer_xls(url_hist))
-    df = pd.concat(frames, ignore_index=True).drop_duplicates(subset=["fecha"]).sort_values("fecha")
+    tabla = soup.find("table", {"id": "tbl_datos"})
+    if tabla is None:
+        raise ValueError("No se encontró la tabla con ID 'tbl_datos' en la página del BCRA.")
+
+    filas = tabla.find_all("tr")
+    data = []
+    for fila in filas:
+        celdas = fila.find_all("td")
+        if len(celdas) >= 2:
+            fecha_txt = celdas[0].text.strip()
+            valor_txt = celdas[1].text.strip().replace(",", ".")
+            try:
+                fecha = pd.to_datetime(fecha_txt, dayfirst=True).date()
+                valor = float(valor_txt)
+                data.append({"fecha": fecha, "icl": valor})
+            except:
+                continue  # ignorar filas con errores de parseo
+
+    df = pd.DataFrame(data).sort_values("fecha")
     return df.reset_index(drop=True)
 
 def valor_icl_en_fecha(df: pd.DataFrame, d: date) -> float:
-    """Devuelve el ICL para d. Si no hay ese día exacto, busca hacia atrás (máx 7 días)."""
-    for k in range(0, 8):
-        dd = (pd.Timestamp(d) - pd.Timedelta(days=k)).date()
-        hit = df.loc[df["fecha"] == dd, "icl"]
-        if not hit.empty:
-            return float(hit.iloc[0])
-    raise ValueError(f"No se encontró ICL para {d} ni los 7 días previos.")
+    """Busca el valor de ICL para una fecha. Si no hay exacta, usa la más cercana previa."""
+    fechas_disponibles = df[df["fecha"] <= d]
+    if fechas_disponibles.empty:
+        raise ValueError(f"No hay valores de ICL anteriores a {d}")
+    fila = fechas_disponibles.iloc[-1]
+    return float(fila["icl"])
 
 # ----------------------------
 # UI de la calculadora
@@ -113,9 +73,7 @@ st.subheader("Resultado")
 
 if st.button("Calcular actualización"):
     try:
-        anios_necesarios = [fecha_anterior.year, fecha_nueva.year]
-        df_icl = cargar_icl_para_anios(anios_necesarios)
-
+        df_icl = cargar_icl_desde_html()
         icl_old = valor_icl_en_fecha(df_icl, fecha_anterior)
         icl_new = valor_icl_en_fecha(df_icl, fecha_nueva)
 
