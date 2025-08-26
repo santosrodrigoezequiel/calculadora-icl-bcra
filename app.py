@@ -27,22 +27,19 @@ st.markdown("""
 4. Ingresalo manualmente en los campos de abajo.
 """)
 
-# Separador
+# Formulario
 st.markdown("---")
 st.markdown("### 📝 Ingresar datos")
 
-# Inputs del usuario
 col1, col2 = st.columns(2)
+
 with col1:
     alquiler_anterior = st.number_input("Alquiler anterior ($)", min_value=0.0, format="%.2f")
-with col2:
-    icl_anterior = st.number_input("ICL anterior", min_value=0.0000, format="%.6f")
+    meses_transcurridos = st.number_input("Período (meses entre ajustes)", min_value=0, step=1)
 
-col3, col4 = st.columns(2)
-with col3:
-    icl_actual = st.number_input("ICL actual", min_value=0.0000, format="%.6f")
-with col4:
-    meses_transcurridos = st.slider("Meses transcurridos", 0, 36, 12)
+with col2:
+    icl_anterior = st.number_input("ICL anterior", min_value=0.0000, format="%.4f")
+    icl_actual = st.number_input("ICL nuevo", min_value=0.0000, format="%.4f")
 
 # Cálculo
 if icl_anterior > 0 and icl_actual > 0 and alquiler_anterior > 0:
