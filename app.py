@@ -34,15 +34,15 @@ st.subheader("📝 Ingresar datos")
 
 col1, col2 = st.columns(2)
 with col1:
-    alquiler_base = st.number_input("Alquiler anterior ($)", min_value=0.0, value=429500.0, step=100.0, format="%.2f")
+    alquiler_base = st.number_input("Alquiler anterior ($)", min_value=0.0, value=0.0, step=100.0, format="%.2f")
 with col2:
-    icl_anterior = st.number_input("ICL anterior", min_value=0.0, value=24.19, step=0.01, format="%.2f")
+    icl_anterior = st.number_input("ICL anterior", min_value=0.0, value=0.0, step=0.01, format="%.2f")
 
 col3, col4 = st.columns(2)
 with col3:
     meses = st.number_input("Período (meses entre ajustes)", min_value=1, max_value=24, value=4, step=1)
 with col4:
-    icl_nuevo = st.number_input("ICL nuevo", min_value=0.0, value=27.00, step=0.01, format="%.2f")
+    icl_nuevo = st.number_input("ICL nuevo", min_value=0.0, value=0.0, step=0.01, format="%.2f")
 
 # ----------------------------
 # Cálculo
@@ -68,3 +68,4 @@ if st.button("Calcular actualización"):
         st.success(f"💰 Nuevo alquiler estimado: ${nuevo_alquiler:,.2f} (aumento {aumento_pct:.2f}%)")
     except Exception as e:
         st.error(f"Ocurrió un error en el cálculo: {e}")
+
